@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Przemek Herts</title>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
@@ -507,7 +508,7 @@
     <span style="color:#1e293b">·</span>
     <a href="/cdn-cgi/l/email-protection#4b32243e390b2e262a222765282426" style="display:flex;align-items:center;gap:6px;color:#475569;text-decoration:none;font-family:'DM Mono',monospace;font-size:11px;transition:color 0.2s" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">&#x2709; Email</a>
   </div>
-  <div>przemekherts.github.io &middot; built with Claude &middot; updated 8 March 2026</div>
+  <div>przemekherts.github.io &middot; built with Claude &middot; updated 10 March 2026</div>
 </footer>
 
 
@@ -557,6 +558,16 @@
       { name:"Glute Extensions", sets:[{w:0,r:15},{w:0,r:15},{w:8,r:11}] },
       { name:"Leg Press",        sets:[{w:115.7,r:12},{w:120.7,r:10},{w:120.7,r:10},{w:120.7,r:10}] },
       { name:"Core (Decline)",   sets:[{w:0,r:20},{w:6,r:10},{w:0,r:10}] },
+    ]},
+    { type:"Push", session:2, date:"08/03/2026", day:"Sun", bw:80.3, exercises:[
+      { name:"Iso-Lat Bench",  sets:[{w:20.7,r:9},{w:20.7,r:9},{w:18.2,r:12},{w:18.2,r:11}] },
+      { name:"Narrow Bench",   sets:[{w:16,r:12},{w:18,r:6},{w:14,r:12},{w:14,r:11}] },
+      { name:"DB OHP",         sets:[{w:14,r:10},{w:14,r:8},{w:14,r:8}] },
+      { name:"Laterals",       sets:[{w:2.5,r:20},{w:2.5,r:20},{w:2.5,r:18}] }, // ⚠️ wrong weight — should have been 4.25 kg
+      { name:"Tricep PDs",     sets:[{w:23.5,r:12},{w:23.5,r:9},{w:23.5,r:9}] },
+      { name:"Face Pulls",     sets:[{w:20,r:20},{w:20,r:15},{w:20,r:15}] },
+      { name:"Pec Flyes",      sets:[{w:52,r:12},{w:52,r:11},{w:52,r:10},{w:32,r:11}] },
+      { name:"Assisted Dips",  sets:[{w:44.3,r:8},{w:44.3,r:8},{w:44.3,r:8}] }, // BW 80.3 kg − 36 kg assist = 44.3 kg effective
     ]},
   ];
 
@@ -731,10 +742,11 @@
     3:[{type:"Pull", volume:6008,sets:19,exercises:5,note:"Pull-downs 50 kg × 12 all 4 grips. Working weight found for kneeling PDs (18.25 kg). Rear delts 25 kg."}],
     4:[{type:"Push", volume:5267,sets:26,exercises:8,note:"Iso-lat bench 20.7 kg/arm. Right/left lateral imbalance on cable laterals noted. Face pulls calibrated at 18.25 kg."}],
     7:[{type:"Legs B",volume:9282,sets:16,exercises:5,note:"Hip Thrusts 70→65 kg, RDLs 60 kg × 10×3 (no belt), Leg Press 120.7 kg × 10, Glute Extensions BW→8 kg. Core 20 reps."}],
+    8:[{type:"Push",volume:6387,sets:27,exercises:8,note:"Iso-lat 20.7/18.2 kg/arm. Narrow Bench 16→18 kg set 2. Dips 8/8/8 — milestone hit! Pec Flyes 52 kg 12/11/10. Cable Laterals ⚠️ wrong weight (2.5 kg instead of 4.25 kg). Core skipped."}],
   };
 
-  const today=8, restDays=[5,6,9,13];
-  const upcoming={8:"Push",10:"Pull",11:"Legs A",12:"Push",14:"Pull",15:"Legs B"};
+  const today=10, restDays=[5,6,9,13];
+  const upcoming={10:"Pull",11:"Legs A",12:"Push",14:"Pull",15:"Legs B",16:"Legs A"};
   const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   const cells=[];
   for(let i=0;i<6;i++) cells.push(null);
@@ -883,17 +895,18 @@
      Legs B        → Glutes, Hamstrings (RDL), Glutes/Hips
   ─────────────────────────────────────────────────────────────────────────── */
   const muscleData = [
-    // Push day exercises → muscle map
-    { muscle: "Chest",      sets: 14, vol: Math.round((20.7*8*2)+(20.7*8*2)+(15.7*12*2)+(15.7*11*2) + (16*12)+(16*11)+(14*12)+(14*12) + (52*12)+(52*8)+(32*18) + (45.2*8)+(45.2*7)+(45.2*7)), color: "#f97316" }, // +3 sets Assisted Dips
-    { muscle: "Triceps",    sets: 11, vol: Math.round((21.75*15)+(23.5*10)+(23.5*9) + (16*12)+(16*11)+(14*12)+(14*12) + (45.2*8)+(45.2*7)+(45.2*7)), color: "#f97316" }, // +3 sets Assisted Dips
-    { muscle: "Shoulders",  sets: 9,  vol: Math.round((14*8)+(14*7)+(12*10) + (4.25*20)+(5*8)+(4.25*17) + (13*20)+(16.5*20)+(18.25*20)), color: "#f97316" },
-    { muscle: "Back",       sets: 15, vol: Math.round((50*12*4) + (22.5*15*2)+(19*15*2) + (16.5*15*2)+(18.25*12)), color: "#38bdf8" },
-    { muscle: "Biceps",     sets: 4,  vol: Math.round((6*15)+(8*7)+(6*12)+(6*12)), color: "#38bdf8" },
-    { muscle: "Rear Delts", sets: 4,  vol: Math.round((32*12)+(25*15)+(25*13)+(25*11)), color: "#38bdf8" },
-    { muscle: "Quads",      sets: 7,  vol: Math.round((62.5*6*2)+(50*10*2) + (12*12*3)), color: "#4ade80" },
-    { muscle: "Hamstrings", sets: 6,  vol: Math.round((39*12)+(42*12)+(45*10) + (65*10)+(65*9)+(65*8)), color: "#a78bfa" },
-    { muscle: "Glutes",     sets: 7,  vol: Math.round((70*12)+(70*11)+(70*10) + (0*15*2)+(8*11)), color: "#a78bfa" },
-    { muscle: "Calves",     sets: 3,  vol: Math.round((45*15)+(45*15)+(45*14)), color: "#4ade80" },
+    // Computed from all 6 sessions (primary sets full + secondary 0.5×) — updated 08 Mar 2026
+    { muscle: "Chest",      sets: 22,   vol: 6859,  color: "#f97316" },
+    { muscle: "Shoulders",  sets: 24,   vol: 1036,  color: "#f97316" },
+    { muscle: "Triceps",    sets: 18,   vol: 3170,  color: "#f97316" },
+    { muscle: "Back",       sets: 12.5, vol: 4359,  color: "#38bdf8" },
+    { muscle: "Biceps",     sets: 8.5,  vol: 290,   color: "#38bdf8" },
+    { muscle: "Rear Delts", sets: 11,   vol: 3314,  color: "#38bdf8" },
+    { muscle: "Glutes",     sets: 15,   vol: 7129,  color: "#a78bfa" },
+    { muscle: "Hamstrings", sets: 13,   vol: 4977,  color: "#a78bfa" },
+    { muscle: "Quads",      sets: 11,   vol: 7191,  color: "#4ade80" },
+    { muscle: "Calves",     sets: 3,    vol: 1980,  color: "#4ade80" },
+    { muscle: "Core",       sets: 3,    vol: 2466,  color: "#fbbf24" },
   ];
 
   // Normalise volumes to 0–100 scale for the bar display
