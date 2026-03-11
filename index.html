@@ -754,8 +754,8 @@
     10:[{type:"Pull",volume:7700,sets:21,exercises:6,note:"Pull-downs 54 kg (+4 kg). Cable Rows 22.5/19 kg. Kneeling PDs 18.25 kg 3×15 at RIR 0 — weight increase due next session. Rear Delts 26.1 kg. Roman Chair 14/9/7 reps. Triceps engaging on kneeling PDs — lat fatigue noted."}],
   };
 
-  const today=11, restDays=[5,6,9,11];
-  const upcoming={12:"Legs A",13:"Push",15:"Pull",16:"Legs B"};
+  const today=11, restDays=[5,6,9,11,16], shamrockDays=[17];
+  const upcoming={12:"Legs A",13:"Push",14:"Pull",15:"Legs B"};
   const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   const cells=[];
   for(let i=0;i<6;i++) cells.push(null);
@@ -817,10 +817,10 @@
             {cells.map((day,idx)=>{
               if(!day) return <div key={`e-${idx}`} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`}}/>;
               const ds=sessions[day],isToday=day===today,isPast=day<today,isFuture=day>today;
-              const pt=upcoming[day],isSel=sel===day,isRest=restDays.includes(day);
+              const pt=upcoming[day],isSel=sel===day,isRest=restDays.includes(day),isShamrock=shamrockDays.includes(day);
               const c=ds?sessionColors[ds[0].type]:null;
               return (
-                <div key={day} onClick={()=>setSel(isSel?null:day)} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`,padding:"6px 6px 4px",cursor:(ds||pt||isRest)?"pointer":"default",background:isSel?(isLight?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)"):isRest?(isLight?"rgba(0,0,0,0.015)":"rgba(255,255,255,0.015)"):isToday?T.todayBg:ds?c?.bg:"transparent",opacity:isFuture&&!pt?0.3:1,transition:"background 0.15s"}}>
+                <div key={day} onClick={()=>setSel(isSel?null:day)} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`,padding:"6px 6px 4px",cursor:(ds||pt||isRest)?"pointer":"default",background:isSel?(isLight?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)"):isRest?(isLight?"rgba(0,0,0,0.015)":"rgba(255,255,255,0.015)"):isToday?T.todayBg:ds?c?.bg:"transparent",opacity:isFuture&&!pt&&!isShamrock?0.3:1,transition:"background 0.15s"}}>
                   <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:isToday?700:400,color:isToday?(isLight?"#c2410c":"#f97316"):ds?(c?.text||T.dayPast):isPast?T.dayPast:T.dayFut,marginBottom:4,display:"flex",alignItems:"center",gap:3}}>
                     {day}
                     {isToday&&<span style={{fontSize:7,color:isLight?"#c2410c":"#f97316",background:isLight?"#ffedd5":"#3d1a06",border:`1px solid ${isLight?"#ea580c50":"#f9731650"}`,borderRadius:3,padding:"1px 3px"}}>TODAY</span>}
@@ -835,8 +835,9 @@
                     <div style={{width:3,height:3,borderRadius:"50%",background:sessionColors[pt]?.dot,flexShrink:0}}/>{pt}
                     {isToday&&<span style={{marginLeft:"auto",fontSize:7,opacity:0.6}}>up next</span>}
                   </div>}
+                  {isShamrock&&<div style={{border:"1px solid #16a34a50",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#4ade80",fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:9}}>☘️</span></div>}
                   {isRest&&<div style={{border:`1px solid ${T.restBorder}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:T.restText,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:7}}>&#x1F634;</span>REST</div>}
-                  {!ds&&!pt&&!isRest&&isPast&&<div style={{fontSize:7,color:T.restText,fontFamily:"'DM Mono',monospace"}}>rest</div>}
+                  {!ds&&!pt&&!isRest&&!isShamrock&&isPast&&<div style={{fontSize:7,color:T.restText,fontFamily:"'DM Mono',monospace"}}>rest</div>}
                 </div>
               );
             })}
@@ -874,6 +875,12 @@
           </div>
         )}
 
+        {sel&&shamrockDays.includes(sel)&&!sessions[sel]&&(
+          <div style={{background:"rgba(22,163,74,0.06)",border:"1px solid #16a34a30",borderRadius:12,padding:"14px 18px",marginTop:14}}>
+            <div style={{color:"#64748b",fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{sel} March 2026 — Day Off</div>
+            <div style={{color:"#4ade80",fontSize:12}}>☘️ St Patrick's Day — rest up, you've earned it!</div>
+          </div>
+        )}
         {sel&&restDays.includes(sel)&&!sessions[sel]&&(
           <div style={{background:T.card,border:`1px solid ${T.restBorder}`,borderRadius:12,padding:"14px 18px",marginTop:14}}>
             <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{sel} March 2026 &mdash; Rest Day</div>
