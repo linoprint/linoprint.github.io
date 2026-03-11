@@ -569,6 +569,14 @@
       { name:"Pec Flyes",      sets:[{w:52,r:12},{w:52,r:11},{w:52,r:10},{w:32,r:11}] },
       { name:"Assisted Dips",  sets:[{w:44.3,r:8},{w:44.3,r:8},{w:44.3,r:8}] }, // BW 80.3 kg − 36 kg assist = 44.3 kg effective
     ]},
+    { type:"Pull", session:2, date:"10/03/2026", day:"Tue", bw:80.0, exercises:[
+      { name:"Pull-downs",       sets:[{w:54,r:8},{w:54,r:9},{w:54,r:9},{w:54,r:9}] },
+      { name:"Cable Rows",       sets:[{w:22.5,r:15},{w:22.5,r:15},{w:19,r:15},{w:19,r:15}] },
+      { name:"Kneeling PDs",     sets:[{w:18.25,r:15},{w:18.25,r:15},{w:18.25,r:15}] },
+      { name:"Bicep Curls",      sets:[{w:6,r:15},{w:6,r:15},{w:8,r:8},{w:8,r:7}] },
+      { name:"Rear Delts",       sets:[{w:26.1,r:15},{w:26.1,r:13},{w:26.1,r:12}] },
+      { name:"Roman Chair",      sets:[{w:0,r:14},{w:0,r:9},{w:0,r:7}] }, // BW — volume uses bw 80.0 kg
+    ]},
   ];
 
   function sessVol(exs,bw) { return Math.round(exs.reduce((s,e) => s+e.sets.reduce((a,x)=>a+(x.w>0?x.w:bw)*x.r,0),0)); }
@@ -743,10 +751,11 @@
     4:[{type:"Push", volume:6262,sets:26,exercises:8,note:"Iso-lat bench 20.7 kg/arm. Right/left lateral imbalance on cable laterals noted. Face pulls calibrated at 18.25 kg."}],
     7:[{type:"Legs B",volume:14094,sets:16,exercises:5,note:"Hip Thrusts 70→65 kg, RDLs 60 kg × 10×3 (no belt), Leg Press 120.7 kg × 10, Glute Extensions BW→8 kg. Core 20 reps."}],
     8:[{type:"Push",volume:6758,sets:27,exercises:8,note:"Iso-lat 20.7/18.2 kg/arm. Narrow Bench 16→18 kg set 2. Dips 8/8/8 — milestone hit! Pec Flyes 52 kg 12/11/10. Cable Laterals ⚠️ wrong weight (2.5 kg instead of 4.25 kg). Core skipped."}],
+    10:[{type:"Pull",volume:7700,sets:21,exercises:6,note:"Pull-downs 54 kg (+4 kg). Cable Rows 22.5/19 kg. Kneeling PDs 18.25 kg 3×15 at RIR 0 — weight increase due next session. Rear Delts 26.1 kg. Roman Chair 14/9/7 reps. Triceps engaging on kneeling PDs — lat fatigue noted."}],
   };
 
-  const today=10, restDays=[5,6,9,13,16];
-  const upcoming={10:"Pull",11:"Legs A",12:"Push",14:"Pull",15:"Legs B",17:"Push"};
+  const today=11, restDays=[5,6,9,13,16];
+  const upcoming={11:"Push",12:"Legs B",14:"Pull",15:"Push",17:"Legs A"};
   const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   const cells=[];
   for(let i=0;i<6;i++) cells.push(null);
