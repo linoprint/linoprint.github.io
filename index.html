@@ -903,26 +903,27 @@
   const { useState, useEffect, useRef } = React;
 
   /* ── MUSCLE GROUP VOLUME DATA ─────────────────────────────────────────────
-     Volumes derived from Session 1 data across all four session types.
-     Each muscle group mapped to its primary exercises + estimated sets/vol.
+     Volumes derived from all sessions (primary muscles full, secondary at 0.5×).
+     Each muscle group mapped to its primary exercises across all logged sessions.
      Push sessions → Chest, Front Delt, Triceps, Side Delt
      Pull sessions → Back, Biceps, Rear Delt
      Legs A        → Quads, Hamstrings (curl), Calves
      Legs B        → Glutes, Hamstrings (RDL), Glutes/Hips
   ─────────────────────────────────────────────────────────────────────────── */
   const muscleData = [
-    // Computed from all 6 sessions (primary sets full + secondary 0.5×) — updated 08 Mar 2026
-    { muscle: "Chest",      sets: 22,   vol: 6859,  color: "#f97316" },
-    { muscle: "Shoulders",  sets: 24,   vol: 1036,  color: "#f97316" },
-    { muscle: "Triceps",    sets: 18,   vol: 3170,  color: "#f97316" },
-    { muscle: "Back",       sets: 12.5, vol: 4359,  color: "#38bdf8" },
-    { muscle: "Biceps",     sets: 8.5,  vol: 290,   color: "#38bdf8" },
-    { muscle: "Rear Delts", sets: 11,   vol: 3314,  color: "#38bdf8" },
-    { muscle: "Glutes",     sets: 15,   vol: 7129,  color: "#a78bfa" },
-    { muscle: "Hamstrings", sets: 13,   vol: 4977,  color: "#a78bfa" },
+    // Computed from all 7 sessions (primary full + secondary 0.5×) — updated 11 Mar 2026
+    { muscle: "Glutes",     sets: 17.5, vol: 12503, color: "#a78bfa" },
+    { muscle: "Chest",      sets: 26,   vol: 10332, color: "#f97316" },
+    { muscle: "Core",       sets: 12,   vol: 10306, color: "#fbbf24" },
+    { muscle: "Triceps",    sets: 27,   vol: 8364,  color: "#f97316" },
+    { muscle: "Back",       sets: 22,   vol: 8315,  color: "#38bdf8" },
+    { muscle: "Hamstrings", sets: 12,   vol: 7294,  color: "#a78bfa" },
     { muscle: "Quads",      sets: 11,   vol: 7191,  color: "#4ade80" },
+    { muscle: "Rear Delts", sets: 13,   vol: 4358,  color: "#38bdf8" },
+    { muscle: "Biceps",     sets: 16,   vol: 3979,  color: "#38bdf8" },
+    { muscle: "Front Delt", sets: 10,   vol: 2871,  color: "#f97316" },
     { muscle: "Calves",     sets: 3,    vol: 1980,  color: "#4ade80" },
-    { muscle: "Core",       sets: 3,    vol: 2466,  color: "#fbbf24" },
+    { muscle: "Side Delt",  sets: 9,    vol: 1662,  color: "#f97316" },
   ];
 
   // Normalise volumes to 0–100 scale for the bar display
@@ -936,7 +937,7 @@
 
   // Session type groupings for the legend
   const groups = [
-    { label: "Push",   color: "#f97316", muscles: ["Chest","Triceps","Shoulders"] },
+    { label: "Push",   color: "#f97316", muscles: ["Chest","Triceps","Front Delt","Side Delt"] },
     { label: "Pull",   color: "#38bdf8", muscles: ["Back","Biceps","Rear Delts"] },
     { label: "Legs A", color: "#4ade80", muscles: ["Quads","Calves"] },
     { label: "Legs B", color: "#a78bfa", muscles: ["Hamstrings","Glutes"] },
@@ -1061,7 +1062,7 @@
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,flexWrap:"wrap",gap:12}}>
           <div>
             <div style={{color:T.text1,fontSize:14,fontWeight:600,marginBottom:2}}>Muscle Balance</div>
-            <div style={{color:T.text3,fontSize:11,fontFamily:"'DM Mono',monospace"}}>Relative training stimulus per muscle group · Session 1</div>
+            <div style={{color:T.text3,fontSize:11,fontFamily:"'DM Mono',monospace"}}>Cumulative training stimulus per muscle group · all sessions</div>
           </div>
           {/* Metric toggle */}
           <div style={{display:"flex",gap:6}}>
@@ -1145,7 +1146,7 @@
         </div>
 
         <div style={{marginTop:12,color:T.text3,fontSize:9,fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
-          Volume = Σ(weight × reps) across all sets · Toggle above to switch metric
+          Volume = Σ(weight × reps) across all sets · Secondary muscles at 0.5× · Toggle above to switch metric
         </div>
       </div>
     );
