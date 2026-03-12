@@ -405,7 +405,7 @@
       <p>
         By day I work in print, graphic design and mailing solutions.
         After hours I lift heavy things &mdash; barbells, dumbbells, the occasional ego &mdash; as part of a
-        hypertrophy-focused PPL programme. Tracking every session, chasing progressive overload,
+        hypertrophy-focused Upper/Lower split programme. Tracking every session, chasing progressive overload,
         and trying not to blame the cable stack for my lateral imbalance.
       </p>
       <p>
@@ -508,7 +508,7 @@
     <span style="color:#1e293b">·</span>
     <a href="/cdn-cgi/l/email-protection#4b32243e390b2e262a222765282426" style="display:flex;align-items:center;gap:6px;color:#475569;text-decoration:none;font-family:'DM Mono',monospace;font-size:11px;transition:color 0.2s" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">&#x2709; Email</a>
   </div>
-  <div>przemekherts.github.io &middot; built with Claude &middot; updated 10 March 2026</div>
+  <div>przemekherts.github.io &middot; built with Claude &middot; updated 12 March 2026</div>
 </footer>
 
 
@@ -730,19 +730,28 @@
   const { useState, useEffect } = React;
 
   const darkColors = {
-    "Pull":   {bg:"#0c2a3d",border:"#38bdf8",text:"#38bdf8",dot:"#38bdf8"},
-    "Push":   {bg:"#3d1a06",border:"#f97316",text:"#f97316",dot:"#f97316"},
-    "Legs A": {bg:"#0d2e16",border:"#4ade80",text:"#4ade80",dot:"#4ade80"},
-    "Legs B": {bg:"#1e1040",border:"#a78bfa",text:"#a78bfa",dot:"#a78bfa"},
+    "Pull":    {bg:"#0c2a3d",border:"#38bdf8",text:"#38bdf8",dot:"#38bdf8"},
+    "Push":    {bg:"#3d1a06",border:"#f97316",text:"#f97316",dot:"#f97316"},
+    "Legs A":  {bg:"#0d2e16",border:"#4ade80",text:"#4ade80",dot:"#4ade80"},
+    "Legs B":  {bg:"#1e1040",border:"#a78bfa",text:"#a78bfa",dot:"#a78bfa"},
+    "Upper A": {bg:"#3d1a06",border:"#f97316",text:"#f97316",dot:"#f97316"},
+    "Upper B": {bg:"#0c2a3d",border:"#38bdf8",text:"#38bdf8",dot:"#38bdf8"},
+    "Lower A": {bg:"#0d2e16",border:"#4ade80",text:"#4ade80",dot:"#4ade80"},
+    "Lower B": {bg:"#1e1040",border:"#a78bfa",text:"#a78bfa",dot:"#a78bfa"},
   };
   const lightColors = {
-    "Pull":   {bg:"#e0f2fe",border:"#0ea5e9",text:"#0369a1",dot:"#0ea5e9"},
-    "Push":   {bg:"#ffedd5",border:"#ea580c",text:"#c2410c",dot:"#ea580c"},
-    "Legs A": {bg:"#dcfce7",border:"#16a34a",text:"#15803d",dot:"#16a34a"},
-    "Legs B": {bg:"#ede9fe",border:"#7c3aed",text:"#6d28d9",dot:"#7c3aed"},
+    "Pull":    {bg:"#e0f2fe",border:"#0ea5e9",text:"#0369a1",dot:"#0ea5e9"},
+    "Push":    {bg:"#ffedd5",border:"#ea580c",text:"#c2410c",dot:"#ea580c"},
+    "Legs A":  {bg:"#dcfce7",border:"#16a34a",text:"#15803d",dot:"#16a34a"},
+    "Legs B":  {bg:"#ede9fe",border:"#7c3aed",text:"#6d28d9",dot:"#7c3aed"},
+    "Upper A": {bg:"#ffedd5",border:"#ea580c",text:"#c2410c",dot:"#ea580c"},
+    "Upper B": {bg:"#e0f2fe",border:"#0ea5e9",text:"#0369a1",dot:"#0ea5e9"},
+    "Lower A": {bg:"#dcfce7",border:"#16a34a",text:"#15803d",dot:"#16a34a"},
+    "Lower B": {bg:"#ede9fe",border:"#7c3aed",text:"#6d28d9",dot:"#7c3aed"},
   };
 
-  const sessions = {
+  // March sessions (PPL programme — completed)
+  const marchSessions = {
     2:[
       {type:"Legs A",volume:5584,sets:13,exercises:4,note:"Combined session — split into A/B retrospectively. Left quad nerve issue on squats at 62.5 kg."},
       {type:"Legs B",volume:4065,sets:6, exercises:2,note:"Hip Thrusts & RDLs done. Leg Press & Glute Extensions not done — calibration next session."},
@@ -754,12 +763,74 @@
     10:[{type:"Pull",volume:7700,sets:21,exercises:6,note:"Pull-downs 54 kg (+4 kg). Cable Rows 22.5/19 kg. Kneeling PDs 18.25 kg 3×15 at RIR 0 — weight increase due next session. Rear Delts 26.1 kg. Roman Chair 14/9/7 reps. Triceps engaging on kneeling PDs — lat fatigue noted."}],
   };
 
-  const today=11, restDays=[5,6,9,11,16], shamrockDays=[17];
-  const upcoming={12:"Legs A",13:"Push",14:"Pull",15:"Legs B"};
+  // April sessions (Upper/Lower programme — logged as they happen)
+  const aprilSessions = {};
+
+  // March: planned sessions from 12th onwards (new Upper/Lower split)
+  // Rotation: Upper B (Tue) → Lower A (Thu) → Upper A (Sat) → Lower B (Sun)
+  // Rotation: Upper B=Tue, Lower A=Thu, Upper A=Sat, Lower B=Sun
+  // March planned from 12th (today=Thu)
+  // Tue: 17,24,31 → Upper B | Thu: 12,19,26 → Lower A | Sat: 14,21,28 → Upper A | Sun: 15,22,29 → Lower B
+  const marchPlanned = {12:"Lower A",14:"Upper A",15:"Lower B",17:"Upper B",19:"Lower A",21:"Upper A",22:"Lower B",24:"Upper B",26:"Lower A",28:"Upper A",29:"Lower B",31:"Upper B"};
+  // April: 1 Apr=Wed. Tue:7,14 | Thu:2,9 | Sat:4,11 | Sun:5,12. Up to 12 April.
+  const aprilPlanned = {2:"Lower A",4:"Upper A",5:"Lower B",7:"Upper B",9:"Lower A",11:"Upper A",12:"Lower B"};
+
+  const today=12, marchRestDays=[13,16,18,20,23,25,27,30], aprilRestDays=[1,3,6,8,10], shamrockDays=[17];
   const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  const cells=[];
-  for(let i=0;i<6;i++) cells.push(null);
-  for(let d=1;d<=31;d++) cells.push(d);
+  // March: 1 Mar = Sunday → offset 6
+  const marchCells=[];
+  for(let i=0;i<6;i++) marchCells.push(null);
+  for(let d=1;d<=31;d++) marchCells.push(d);
+  // April: 1 Apr = Wednesday → offset 2
+  const aprilCells=[];
+  for(let i=0;i<2;i++) aprilCells.push(null);
+  for(let d=1;d<=30;d++) aprilCells.push(d);
+
+  function renderDay(day, sessions, planned, restDays, isShamrockDay, monthLabel, sessionColors, T, isLight, sel, setSel) {
+    const ds=sessions[day], isToday=(monthLabel==="March 2026"&&day===today), isPast=(monthLabel==="March 2026"?day<today:true), isFuture=(monthLabel==="March 2026"?day>today:false);
+    const pt=planned[day], isSel=sel===`${monthLabel}-${day}`, isRest=restDays.includes(day), isShamrock=isShamrockDay;
+    const c=ds?sessionColors[ds[0].type]:null;
+    return (
+      <div key={day} onClick={()=>setSel(isSel?null:`${monthLabel}-${day}`)} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`,padding:"6px 6px 4px",cursor:(ds||pt||isRest)?"pointer":"default",background:isSel?(isLight?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)"):isRest?(isLight?"rgba(0,0,0,0.015)":"rgba(255,255,255,0.015)"):isToday?T.todayBg:ds?c?.bg:"transparent",opacity:isFuture&&!pt&&!isShamrock?0.3:1,transition:"background 0.15s"}}>
+        <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:isToday?700:400,color:isToday?(isLight?"#c2410c":"#f97316"):ds?(c?.text||T.dayPast):isPast?T.dayPast:T.dayFut,marginBottom:4,display:"flex",alignItems:"center",gap:3}}>
+          {day}
+          {isToday&&<span style={{fontSize:7,color:isLight?"#c2410c":"#f97316",background:isLight?"#ffedd5":"#3d1a06",border:`1px solid ${isLight?"#ea580c50":"#f9731650"}`,borderRadius:3,padding:"1px 3px"}}>TODAY</span>}
+        </div>
+        {ds&&ds.map((s,i)=>{const sc=sessionColors[s.type];return(
+          <div key={i} style={{background:sc.bg,border:`1px solid ${sc.border}`,borderRadius:4,padding:"2px 5px",marginBottom:2,fontSize:8,color:sc.text,fontFamily:"'DM Mono',monospace",fontWeight:600,display:"flex",alignItems:"center",gap:3}}>
+            <div style={{width:3,height:3,borderRadius:"50%",background:sc.dot,flexShrink:0}}/>{s.type}
+            <span style={{color:sc.text,opacity:0.6,fontWeight:400,marginLeft:"auto"}}>{s.volume.toLocaleString()}</span>
+          </div>
+        );})}
+        {!ds&&pt&&<div style={{border:`1px ${isToday?"solid":"dashed"} ${sessionColors[pt]?.border}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:sessionColors[pt]?.text,opacity:isToday?1:0.5,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3}}>
+          <div style={{width:3,height:3,borderRadius:"50%",background:sessionColors[pt]?.dot,flexShrink:0}}/>{pt}
+          {isToday&&<span style={{marginLeft:"auto",fontSize:7,opacity:0.6}}>up next</span>}
+        </div>}
+        {isShamrock&&<div style={{border:"1px solid #16a34a50",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#4ade80",fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:9}}>☘️</span></div>}
+        {isRest&&!ds&&!pt&&!isShamrock&&<div style={{border:`1px solid ${T.restBorder}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:T.restText,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:7}}>&#x1F634;</span>REST</div>}
+        {!ds&&!pt&&!isRest&&!isShamrock&&isPast&&<div style={{fontSize:7,color:T.restText,fontFamily:"'DM Mono',monospace"}}>rest</div>}
+      </div>
+    );
+  }
+
+  function MonthGrid({monthLabel, cells, sessions, planned, restDays, shamrockDays, sessionColors, T, isLight, sel, setSel}) {
+    return (
+      <div style={{marginBottom:24}}>
+        <div style={{color:T.lbl,fontSize:10,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:2,marginBottom:10,paddingLeft:2}}>{monthLabel}</div>
+        <div style={{border:`1px solid ${T.cardBorder}`,borderRadius:12,overflow:"hidden"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",borderBottom:`1px solid ${T.gridSub}`}}>
+            {days.map(d=><div key={d} style={{padding:"8px 0",textAlign:"center",color:d==="Sat"||d==="Sun"?T.dayPast:T.dayFut,fontSize:9,fontFamily:"'DM Mono',monospace",letterSpacing:1}}>{d}</div>)}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)"}}>
+            {cells.map((day,idx)=>{
+              if(!day) return <div key={`e-${idx}`} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`}}/>;
+              return renderDay(day, sessions, planned, restDays, shamrockDays.includes(day), monthLabel, sessionColors, T, isLight, sel, setSel);
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   function Calendar() {
     const [sel, setSel] = useState(null);
@@ -776,77 +847,57 @@
       ? {card:"#ffffff", cardBorder:"#e2e8f0", val:"#0f172a", lbl:"#94a3b8", grid:"#f1f5f9", gridSub:"#e2e8f0", dayFut:"#94a3b8", dayPast:"#cbd5e1", restBorder:"#e2e8f0", restText:"#94a3b8", noteText:"#64748b", planned:"#94a3b8", todayBg:"rgba(234,88,12,0.06)"}
       : {card:"rgba(255,255,255,0.02)", cardBorder:"#1e293b", val:"#f1f5f9", lbl:"#64748b", grid:"#0a1020", gridSub:"#1e293b", dayFut:"#64748b", dayPast:"#475569", restBorder:"#1e293b", restText:"#64748b", noteText:"#64748b", planned:"#64748b", todayBg:"rgba(247,115,22,0.06)"};
 
-    const selSessions = sel ? sessions[sel] : null;
-    const totalVol = Object.values(sessions).flat().reduce((s,x)=>s+x.volume,0);
-    const totalSets = Object.values(sessions).flat().reduce((s,x)=>s+x.sets,0);
+    const allLoggedSessions = {...marchSessions, ...Object.fromEntries(Object.entries(aprilSessions).map(([k,v])=>[`apr-${k}`,v]))};
+    const totalVol = [...Object.values(marchSessions), ...Object.values(aprilSessions)].flat().reduce((s,x)=>s+x.volume,0);
+    const totalSets = [...Object.values(marchSessions), ...Object.values(aprilSessions)].flat().reduce((s,x)=>s+x.sets,0);
+    const totalSessionDays = Object.keys(marchSessions).length + Object.keys(aprilSessions).length;
+
+    // Determine selected session detail
+    let selMonth=null, selDay=null, selSessions=null, selPlanned=null;
+    if(sel) {
+      const parts = sel.split("-");
+      if(parts[0]==="March 2026") { selMonth="March 2026"; selDay=parseInt(parts[parts.length-1]); selSessions=marchSessions[selDay]; selPlanned=marchPlanned[selDay]; }
+      else if(parts[0]==="April 2026") { selMonth="April 2026"; selDay=parseInt(parts[parts.length-1]); selSessions=aprilSessions[selDay]; selPlanned=aprilPlanned[selDay]; }
+    }
+
+    // Only show new session types in legend
+    const legendTypes = ["Upper B","Lower A","Upper A","Lower B"];
 
     return (
       <div style={{fontFamily:"'DM Sans',sans-serif",padding:"20px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:18}}>
           {[
-            {l:"Sessions",    v:Object.keys(sessions).length},
+            {l:"Sessions",    v:totalSessionDays},
             {l:"Total Volume",v:totalVol.toLocaleString()+" kg"},
             {l:"Total Sets",  v:totalSets},
-            {l:"Rest Days",   v:restDays.length},
+            {l:"Programme",   v:"Upper/Lower"},
           ].map(s=>(
             <div key={s.l} style={{background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
-              <div style={{color:T.val,fontSize:17,fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{s.v}</div>
+              <div style={{color:T.val,fontSize:s.l==="Programme"?11:17,fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{s.v}</div>
               <div style={{color:T.lbl,fontSize:9,marginTop:2,textTransform:"uppercase",letterSpacing:1}}>{s.l}</div>
             </div>
           ))}
         </div>
 
         <div style={{display:"flex",gap:7,marginBottom:14,flexWrap:"wrap"}}>
-          {Object.entries(sessionColors).map(([type,c])=>(
+          {legendTypes.map(type=>{const c=sessionColors[type];return(
             <div key={type} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",background:c.bg,border:`1px solid ${c.border}`,borderRadius:20}}>
               <div style={{width:5,height:5,borderRadius:"50%",background:c.dot}}/>
               <span style={{color:c.text,fontSize:9,fontFamily:"'DM Mono',monospace"}}>{type}</span>
             </div>
-          ))}
+          )})}
           <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:20}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:T.planned,border:`1px dashed ${T.planned}`}}/>
             <span style={{color:T.planned,fontSize:9,fontFamily:"'DM Mono',monospace"}}>Planned</span>
           </div>
         </div>
 
-        <div style={{border:`1px solid ${T.cardBorder}`,borderRadius:12,overflow:"hidden"}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",borderBottom:`1px solid ${T.gridSub}`}}>
-            {days.map(d=><div key={d} style={{padding:"8px 0",textAlign:"center",color:d==="Sat"||d==="Sun"?T.dayPast:T.dayFut,fontSize:9,fontFamily:"'DM Mono',monospace",letterSpacing:1}}>{d}</div>)}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)"}}>
-            {cells.map((day,idx)=>{
-              if(!day) return <div key={`e-${idx}`} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`}}/>;
-              const ds=sessions[day],isToday=day===today,isPast=day<today,isFuture=day>today;
-              const pt=upcoming[day],isSel=sel===day,isRest=restDays.includes(day),isShamrock=shamrockDays.includes(day);
-              const c=ds?sessionColors[ds[0].type]:null;
-              return (
-                <div key={day} onClick={()=>setSel(isSel?null:day)} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`,padding:"6px 6px 4px",cursor:(ds||pt||isRest)?"pointer":"default",background:isSel?(isLight?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)"):isRest?(isLight?"rgba(0,0,0,0.015)":"rgba(255,255,255,0.015)"):isToday?T.todayBg:ds?c?.bg:"transparent",opacity:isFuture&&!pt&&!isShamrock?0.3:1,transition:"background 0.15s"}}>
-                  <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:isToday?700:400,color:isToday?(isLight?"#c2410c":"#f97316"):ds?(c?.text||T.dayPast):isPast?T.dayPast:T.dayFut,marginBottom:4,display:"flex",alignItems:"center",gap:3}}>
-                    {day}
-                    {isToday&&<span style={{fontSize:7,color:isLight?"#c2410c":"#f97316",background:isLight?"#ffedd5":"#3d1a06",border:`1px solid ${isLight?"#ea580c50":"#f9731650"}`,borderRadius:3,padding:"1px 3px"}}>TODAY</span>}
-                  </div>
-                  {ds&&ds.map((s,i)=>{const sc=sessionColors[s.type];return(
-                    <div key={i} style={{background:sc.bg,border:`1px solid ${sc.border}`,borderRadius:4,padding:"2px 5px",marginBottom:2,fontSize:8,color:sc.text,fontFamily:"'DM Mono',monospace",fontWeight:600,display:"flex",alignItems:"center",gap:3}}>
-                      <div style={{width:3,height:3,borderRadius:"50%",background:sc.dot,flexShrink:0}}/>{s.type}
-                      <span style={{color:sc.text,opacity:0.6,fontWeight:400,marginLeft:"auto"}}>{s.volume.toLocaleString()}</span>
-                    </div>
-                  );})}
-                  {!ds&&pt&&<div style={{border:`1px ${isToday?"solid":"dashed"} ${sessionColors[pt]?.border}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:sessionColors[pt]?.text,opacity:isToday?1:0.5,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3}}>
-                    <div style={{width:3,height:3,borderRadius:"50%",background:sessionColors[pt]?.dot,flexShrink:0}}/>{pt}
-                    {isToday&&<span style={{marginLeft:"auto",fontSize:7,opacity:0.6}}>up next</span>}
-                  </div>}
-                  {isShamrock&&<div style={{border:"1px solid #16a34a50",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#4ade80",fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:9}}>☘️</span></div>}
-                  {isRest&&<div style={{border:`1px solid ${T.restBorder}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:T.restText,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:7}}>&#x1F634;</span>REST</div>}
-                  {!ds&&!pt&&!isRest&&!isShamrock&&isPast&&<div style={{fontSize:7,color:T.restText,fontFamily:"'DM Mono',monospace"}}>rest</div>}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <MonthGrid monthLabel="March 2026" cells={marchCells} sessions={marchSessions} planned={marchPlanned} restDays={marchRestDays} shamrockDays={shamrockDays} sessionColors={sessionColors} T={T} isLight={isLight} sel={sel} setSel={setSel}/>
+        <MonthGrid monthLabel="April 2026" cells={aprilCells} sessions={aprilSessions} planned={aprilPlanned} restDays={aprilRestDays} shamrockDays={[]} sessionColors={sessionColors} T={T} isLight={isLight} sel={sel} setSel={setSel}/>
 
         {selSessions&&(
           <div style={{background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:12,padding:"16px 18px",marginTop:14}}>
-            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>{sel} March 2026 &mdash; Session Detail</div>
+            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>{selDay} {selMonth} &mdash; Session Detail</div>
             {selSessions.map((s,i)=>{const sc=sessionColors[s.type];return(
               <div key={i} style={{marginBottom:i<selSessions.length-1?12:0,paddingBottom:i<selSessions.length-1?12:0,borderBottom:i<selSessions.length-1?`1px solid ${T.gridSub}`:"none"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:7}}><div style={{width:7,height:7,borderRadius:"50%",background:sc.dot}}/><span style={{color:sc.text,fontSize:12,fontWeight:600}}>{s.type}</span></div>
@@ -864,27 +915,21 @@
           </div>
         )}
 
-        {sel&&!selSessions&&upcoming[sel]&&(
-          <div style={{background:T.card,border:`1px ${sel===today?"solid":"dashed"} ${T.cardBorder}`,borderRadius:12,padding:"14px 18px",marginTop:14}}>
-            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>{sel} March 2026 &mdash; {sel===today?"Today · Not yet logged":"Planned"}</div>
+        {sel&&!selSessions&&selPlanned&&(
+          <div style={{background:T.card,border:`1px dashed ${T.cardBorder}`,borderRadius:12,padding:"14px 18px",marginTop:14}}>
+            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>{selDay} {selMonth} &mdash; Planned</div>
             <div style={{display:"flex",alignItems:"center",gap:7}}>
-              <div style={{width:7,height:7,borderRadius:"50%",background:sessionColors[upcoming[sel]]?.dot}}/>
-              <span style={{color:sessionColors[upcoming[sel]]?.text,fontSize:12,fontWeight:600}}>{upcoming[sel]} Day</span>
-              <span style={{color:T.planned,fontSize:10,fontFamily:"'DM Mono',monospace"}}>— {sel===today?"up next":"planned in rotation"}</span>
+              <div style={{width:7,height:7,borderRadius:"50%",background:sessionColors[selPlanned]?.dot}}/>
+              <span style={{color:sessionColors[selPlanned]?.text,fontSize:12,fontWeight:600}}>{selPlanned}</span>
+              <span style={{color:T.planned,fontSize:10,fontFamily:"'DM Mono',monospace"}}>— planned in rotation</span>
             </div>
           </div>
         )}
 
-        {sel&&shamrockDays.includes(sel)&&!sessions[sel]&&(
+        {sel&&selMonth==="March 2026"&&selDay&&shamrockDays.includes(selDay)&&!selSessions&&(
           <div style={{background:"rgba(22,163,74,0.06)",border:"1px solid #16a34a30",borderRadius:12,padding:"14px 18px",marginTop:14}}>
-            <div style={{color:"#64748b",fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{sel} March 2026 — Day Off</div>
+            <div style={{color:"#64748b",fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{selDay} March 2026 — Day Off</div>
             <div style={{color:"#4ade80",fontSize:12}}>☘️ St Patrick's Day — rest up, you've earned it!</div>
-          </div>
-        )}
-        {sel&&restDays.includes(sel)&&!sessions[sel]&&(
-          <div style={{background:T.card,border:`1px solid ${T.restBorder}`,borderRadius:12,padding:"14px 18px",marginTop:14}}>
-            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{sel} March 2026 &mdash; Rest Day</div>
-            <div style={{color:T.restText,fontSize:12}}>&#x1F634; Recovery day</div>
           </div>
         )}
 
