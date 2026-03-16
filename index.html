@@ -26,8 +26,7 @@
       --text-4:    #334155;
       --pull:      #38bdf8;
       --push:      #f97316;
-      --legs-a:    #4ade80;
-      --legs-b:    #a78bfa;
+      --legs:     #a78bfa;
     }
 
     html { scroll-behavior: smooth; }
@@ -330,7 +329,6 @@
     <a href="#about">About</a>
     <a href="#progress">Progress</a>
     <a href="#balance">Balance</a>
-    <a href="#calendar">Calendar</a>
     <a href="#links">Links</a>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">
       <span id="themeIcon" style="font-family:'DM Mono',monospace;font-size:15px;line-height:1">&#x2600;</span>
@@ -347,7 +345,6 @@
   <a href="#about"   onclick="closeDrawer()">About</a>
   <a href="#progress" onclick="closeDrawer()">Progress</a>
   <a href="#balance"  onclick="closeDrawer()">Balance</a>
-  <a href="#calendar" onclick="closeDrawer()">Calendar</a>
   <a href="#links"    onclick="closeDrawer()">Links</a>
   <div class="drawer-theme">
     <span>Theme</span>
@@ -439,18 +436,6 @@
     </div>
   </section>
 
-  <!-- TRAINING CALENDAR -->
-  <section id="calendar">
-    <div class="section-label">Training Calendar &mdash; March 2026</div>
-    <div class="chart-outer">
-      <div id="calendar-mount"></div>
-    </div>
-  </section>
-
-
-
-
-
   <!-- LINKS -->
   <section id="links">
     <div class="section-label">Links</div>
@@ -518,11 +503,12 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function() {
   const SESSION_COLORS = {
-    "Legs A": "#4ade80",
-    "Legs B": "#a78bfa",
-    "Pull":   "#38bdf8",
-    "Push":   "#f97316",
+    "Legs": "#a78bfa",
+    "Pull": "#38bdf8",
+    "Push": "#f97316",
   };
+  const normaliseType = t =>
+    (t==="Legs A"||t==="Legs B"||t==="Legs"||t==="Lower A"||t==="Lower B") ? "Legs" : t;
 
   const sessions = [
     { type:"Legs A", session:1, date:"02/03/2026", day:"Sun", bw:81.5, exercises:[
@@ -577,6 +563,22 @@
       { name:"Rear Delts",       sets:[{w:26.1,r:15},{w:26.1,r:13},{w:26.1,r:12}] },
       { name:"Roman Chair",      sets:[{w:0,r:14},{w:0,r:9},{w:0,r:7}] }, // BW — volume uses bw 80.0 kg
     ]},
+    { type:"Push", session:3, date:"14/03/2026", day:"Sat", bw:79.7, exercises:[
+      { name:"Iso-Lat Bench",  sets:[{w:21.95,r:6},{w:21.95,r:6},{w:18.2,r:10},{w:18.2,r:8}] },
+      { name:"DB OHP",         sets:[{w:14,r:12},{w:14,r:9},{w:14,r:9}] },
+      { name:"Pec Flyes",      sets:[{w:52,r:13},{w:52,r:12},{w:52,r:8},{w:32,r:8}] },
+      { name:"Laterals",       sets:[{w:4.25,r:13},{w:3.4,r:15},{w:3.4,r:12}] },
+      { name:"Face Pulls",     sets:[{w:20,r:20},{w:20,r:15},{w:20,r:15}] },
+      { name:"Tricep PDs",     sets:[{w:23.5,r:12},{w:23.5,r:10},{w:23.5,r:9}] },
+      { name:"Assisted Dips",  sets:[{w:43.7,r:10},{w:43.7,r:10},{w:43.7,r:8}] }, // BW 79.7 kg − 36 kg assist = 43.7 kg effective
+    ]},
+    { type:"Legs B", session:3, date:"15/03/2026", day:"Sun", bw:80.5, exercises:[
+      { name:"BB Hip Thrusts", sets:[{w:70,r:13},{w:70,r:12},{w:70,r:12}] },
+      { name:"RDLs",           sets:[{w:65,r:12},{w:65,r:11},{w:65,r:10}] },
+      { name:"Leg Press",      sets:[{w:120.7,r:12},{w:120.7,r:12},{w:120.7,r:14}] },
+      { name:"Walking Lunges", sets:[{w:8,r:16},{w:8,r:16}] },
+      { name:"Calf Raises",    sets:[{w:45,r:15},{w:45,r:15},{w:45,r:16}] },
+    ]},
   ];
 
   function sessVol(exs,bw) { return Math.round(exs.reduce((s,e) => s+e.sets.reduce((a,x)=>a+(x.w>0?x.w:bw)*x.r,0),0)); }
@@ -592,8 +594,9 @@
   const statsByTypeAcc = {};
   sessions.forEach(s => {
     const allSets = s.exercises.flatMap(e=>e.sets);
-    if (!statsByTypeAcc[s.type]) statsByTypeAcc[s.type] = {volumeArr:[],setsArr:[],exsArr:[],maxWArr:[],repsArr:[]};
-    const acc = statsByTypeAcc[s.type];
+    const sType = normaliseType(s.type);
+    if (!statsByTypeAcc[sType]) statsByTypeAcc[sType] = {volumeArr:[],setsArr:[],exsArr:[],maxWArr:[],repsArr:[]};
+    const acc = statsByTypeAcc[sType];
     acc.volumeArr.push(sessVol(s.exercises,s.bw));
     acc.setsArr.push(totalSets(s.exercises));
     acc.exsArr.push(s.exercises.length);
@@ -654,9 +657,9 @@
         </tr></thead>
         <tbody>
           ${sessions.map((s,i)=>{
-            const color=SESSION_COLORS[s.type];
+            const sType=normaliseType(s.type); const color=SESSION_COLORS[sType]||'#94a3b8';
             return `<tr style="border-bottom:1px solid #0a1020;background:${i%2===1?'rgba(255,255,255,0.01)':'transparent'}">
-              <td style="padding:9px 14px"><span style="color:${color};font-weight:600;font-size:11px">${s.type}</span></td>
+              <td style="padding:9px 14px"><span style="color:${color};font-weight:600;font-size:11px">${sType}</span></td>
               <td style="color:#94a3b8;padding:9px 14px;font-family:'DM Mono',monospace">${s.date} ${s.day}</td>
               <td style="color:#64748b;padding:9px 14px;font-family:'DM Mono',monospace">${s.exercises.length}</td>
               <td style="color:#64748b;padding:9px 14px;font-family:'DM Mono',monospace">${totalSets(s.exercises)}</td>
@@ -676,8 +679,8 @@
 
   const chartOverview = new Chart(document.getElementById('chartOverview'),{
     type:'bar',
-    data:{labels:sessions.map(s=>`${s.type} · ${s.day} ${s.date.slice(0,5)}`),datasets:[{data:sessions.map(s=>sessVol(s.exercises,s.bw)),backgroundColor:sessions.map(s=>SESSION_COLORS[s.type]+'cc'),borderColor:sessions.map(s=>SESSION_COLORS[s.type]),borderWidth:1,borderRadius:6}]},
-    options:{responsive:true,plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:i=>sessions[i[0].dataIndex].type+' · '+sessions[i[0].dataIndex].date,label:i=>' '+i.raw.toLocaleString()+' kg  ·  '+totalSets(sessions[i.dataIndex].exercises)+' sets'}}},scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#94a3b8'}},y:{grid:{color:'#1e293b'},border:{display:false},ticks:{color:'#94a3b8',callback:v=>v.toLocaleString()}}}}
+    data:{labels:sessions.map(s=>`${s.type} · ${s.day} ${s.date.slice(0,5)}`),datasets:[{data:sessions.map(s=>sessVol(s.exercises,s.bw)),backgroundColor:sessions.map(s=>(SESSION_COLORS[normaliseType(s.type)]||'#94a3b8')+'cc'),borderColor:sessions.map(s=>SESSION_COLORS[normaliseType(s.type)]||'#94a3b8'),borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:i=>normaliseType(sessions[i[0].dataIndex].type)+' · '+sessions[i[0].dataIndex].date,label:i=>' '+i.raw.toLocaleString()+' kg  ·  '+totalSets(sessions[i.dataIndex].exercises)+' sets'}}},scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#94a3b8'}},y:{grid:{color:'#1e293b'},border:{display:false},ticks:{color:'#94a3b8',callback:v=>v.toLocaleString()}}}}
   });
 
   document.addEventListener('themechange', e => {
@@ -685,15 +688,15 @@
     chartOverview.update();
   });
 
-  const exData = sessions.flatMap(s=>s.exercises.map(e=>({label:e.name,value:exVol(e.sets,s.bw),type:s.type,session:`${s.type} S${s.session}`,maxW:Math.max(...e.sets.map(x=>x.w)),reps:e.sets.reduce((a,x)=>a+x.r,0)})));
+  const exData = sessions.flatMap(s=>s.exercises.map(e=>({label:e.name,value:exVol(e.sets,s.bw),type:normaliseType(s.type),session:`${normaliseType(s.type)} S${s.session}`,maxW:Math.max(...e.sets.map(x=>x.w)),reps:e.sets.reduce((a,x)=>a+x.r,0)})));
   const chartExercises = new Chart(document.getElementById('chartExercises'),{
     type:'bar',
-    data:{labels:exData.map(d=>d.label),datasets:[{data:exData.map(d=>d.value),backgroundColor:exData.map(d=>SESSION_COLORS[d.type]+'cc'),borderColor:exData.map(d=>SESSION_COLORS[d.type]),borderWidth:1,borderRadius:4}]},
+    data:{labels:exData.map(d=>d.label),datasets:[{data:exData.map(d=>d.value),backgroundColor:exData.map(d=>(SESSION_COLORS[d.type]||'#94a3b8')+'cc'),borderColor:exData.map(d=>SESSION_COLORS[d.type]||'#94a3b8'),borderWidth:1,borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:i=>exData[i[0].dataIndex].session,label:i=>{const d=exData[i.dataIndex];const wStr=d.maxW>0?' Max: '+d.maxW+' kg':' BW '+BW+' kg';return[' '+i.raw.toLocaleString()+' kg vol',wStr+' · '+d.reps+' reps']}}}},scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#94a3b8',maxRotation:35,minRotation:25}},y:{grid:{color:'#1e293b'},border:{display:false},ticks:{color:'#94a3b8'}}}}
   });
 
   const radarMetrics=['Volume','Sets','Exercises','Max Weight','Avg Reps'];
-  const types=Object.keys(SESSION_COLORS);
+  const types=['Pull','Push','Legs'];
   const rawStats={};
   types.forEach(t=>{const s=statsByType[t];if(s)rawStats[t]=[s.volume,s.sets,s.exercises,s.maxW,s.avgReps];});
   const normData={};types.forEach(t=>normData[t]=[]);
@@ -722,226 +725,6 @@
 </script>
 
 
-<!-- ═══════════════════════════════════════════════════════════════
-     TRAINING CALENDAR (React + Babel)
-═══════════════════════════════════════════════════════════════ -->
-<script type="text/babel">
-(function() {
-  const { useState, useEffect } = React;
-
-  const darkColors = {
-    "Pull":    {bg:"#0c2a3d",border:"#38bdf8",text:"#38bdf8",dot:"#38bdf8"},
-    "Push":    {bg:"#3d1a06",border:"#f97316",text:"#f97316",dot:"#f97316"},
-    "Legs A":  {bg:"#0d2e16",border:"#4ade80",text:"#4ade80",dot:"#4ade80"},
-    "Legs B":  {bg:"#1e1040",border:"#a78bfa",text:"#a78bfa",dot:"#a78bfa"},
-    "Upper A": {bg:"#3d1a06",border:"#f97316",text:"#f97316",dot:"#f97316"},
-    "Upper B": {bg:"#0c2a3d",border:"#38bdf8",text:"#38bdf8",dot:"#38bdf8"},
-    "Lower A": {bg:"#0d2e16",border:"#4ade80",text:"#4ade80",dot:"#4ade80"},
-    "Lower B": {bg:"#1e1040",border:"#a78bfa",text:"#a78bfa",dot:"#a78bfa"},
-  };
-  const lightColors = {
-    "Pull":    {bg:"#e0f2fe",border:"#0ea5e9",text:"#0369a1",dot:"#0ea5e9"},
-    "Push":    {bg:"#ffedd5",border:"#ea580c",text:"#c2410c",dot:"#ea580c"},
-    "Legs A":  {bg:"#dcfce7",border:"#16a34a",text:"#15803d",dot:"#16a34a"},
-    "Legs B":  {bg:"#ede9fe",border:"#7c3aed",text:"#6d28d9",dot:"#7c3aed"},
-    "Upper A": {bg:"#ffedd5",border:"#ea580c",text:"#c2410c",dot:"#ea580c"},
-    "Upper B": {bg:"#e0f2fe",border:"#0ea5e9",text:"#0369a1",dot:"#0ea5e9"},
-    "Lower A": {bg:"#dcfce7",border:"#16a34a",text:"#15803d",dot:"#16a34a"},
-    "Lower B": {bg:"#ede9fe",border:"#7c3aed",text:"#6d28d9",dot:"#7c3aed"},
-  };
-
-  // March sessions (PPL programme — completed)
-  const marchSessions = {
-    2:[
-      {type:"Legs A",volume:5584,sets:13,exercises:4,note:"Combined session — split into A/B retrospectively. Left quad nerve issue on squats at 62.5 kg."},
-      {type:"Legs B",volume:4065,sets:6, exercises:2,note:"Hip Thrusts & RDLs done. Leg Press & Glute Extensions not done — calibration next session."},
-    ],
-    3:[{type:"Pull", volume:6008,sets:19,exercises:5,note:"Pull-downs 50 kg × 12 all 4 grips. Working weight found for kneeling PDs (18.25 kg). Rear delts 25 kg."}],
-    4:[{type:"Push", volume:6262,sets:26,exercises:8,note:"Iso-lat bench 20.7 kg/arm. Right/left lateral imbalance on cable laterals noted. Face pulls calibrated at 18.25 kg."}],
-    7:[{type:"Legs B",volume:14094,sets:16,exercises:5,note:"Hip Thrusts 70→65 kg, RDLs 60 kg × 10×3 (no belt), Leg Press 120.7 kg × 10, Glute Extensions BW→8 kg. Core 20 reps."}],
-    8:[{type:"Push",volume:6758,sets:27,exercises:8,note:"Iso-lat 20.7/18.2 kg/arm. Narrow Bench 16→18 kg set 2. Dips 8/8/8 — milestone hit! Pec Flyes 52 kg 12/11/10. Cable Laterals ⚠️ wrong weight (2.5 kg instead of 4.25 kg). Core skipped."}],
-    10:[{type:"Pull",volume:7700,sets:21,exercises:6,note:"Pull-downs 54 kg (+4 kg). Cable Rows 22.5/19 kg. Kneeling PDs 18.25 kg 3×15 at RIR 0 — weight increase due next session. Rear Delts 26.1 kg. Roman Chair 14/9/7 reps. Triceps engaging on kneeling PDs — lat fatigue noted."}],
-  };
-
-  // April sessions (Upper/Lower programme — logged as they happen)
-  const aprilSessions = {};
-
-  // March: planned sessions from 12th onwards (new Upper/Lower split)
-  // Rotation: Upper B (Tue) → Lower A (Thu) → Upper A (Sat) → Lower B (Sun)
-  // Rotation: Upper B=Tue, Lower A=Thu, Upper A=Sat, Lower B=Sun
-  // March planned from 12th (today=Thu)
-  // Tue: 17,24,31 → Upper B | Thu: 12,19,26 → Lower A | Sat: 14,21,28 → Upper A | Sun: 15,22,29 → Lower B
-  const marchPlanned = {12:"Lower A",14:"Upper A",15:"Lower B",17:"Upper B",19:"Lower A",21:"Upper A",22:"Lower B",24:"Upper B",26:"Lower A",28:"Upper A",29:"Lower B",31:"Upper B"};
-  // April: 1 Apr=Wed. Tue:7,14 | Thu:2,9 | Sat:4,11 | Sun:5,12. Up to 12 April.
-  const aprilPlanned = {2:"Lower A",4:"Upper A",5:"Lower B",7:"Upper B",9:"Lower A",11:"Upper A",12:"Lower B"};
-
-  const today=12, marchRestDays=[13,16,18,20,23,25,27,30], aprilRestDays=[1,3,6,8,10], shamrockDays=[17];
-  const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  // March: 1 Mar = Sunday → offset 6
-  const marchCells=[];
-  for(let i=0;i<6;i++) marchCells.push(null);
-  for(let d=1;d<=31;d++) marchCells.push(d);
-  // April: 1 Apr = Wednesday → offset 2
-  const aprilCells=[];
-  for(let i=0;i<2;i++) aprilCells.push(null);
-  for(let d=1;d<=30;d++) aprilCells.push(d);
-
-  function renderDay(day, sessions, planned, restDays, isShamrockDay, monthLabel, sessionColors, T, isLight, sel, setSel) {
-    const ds=sessions[day], isToday=(monthLabel==="March 2026"&&day===today), isPast=(monthLabel==="March 2026"?day<today:true), isFuture=(monthLabel==="March 2026"?day>today:false);
-    const pt=planned[day], isSel=sel===`${monthLabel}-${day}`, isRest=restDays.includes(day), isShamrock=isShamrockDay;
-    const c=ds?sessionColors[ds[0].type]:null;
-    return (
-      <div key={day} onClick={()=>setSel(isSel?null:`${monthLabel}-${day}`)} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`,padding:"6px 6px 4px",cursor:(ds||pt||isRest)?"pointer":"default",background:isSel?(isLight?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)"):isRest?(isLight?"rgba(0,0,0,0.015)":"rgba(255,255,255,0.015)"):isToday?T.todayBg:ds?c?.bg:"transparent",opacity:isFuture&&!pt&&!isShamrock?0.3:1,transition:"background 0.15s"}}>
-        <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:isToday?700:400,color:isToday?(isLight?"#c2410c":"#f97316"):ds?(c?.text||T.dayPast):isPast?T.dayPast:T.dayFut,marginBottom:4,display:"flex",alignItems:"center",gap:3}}>
-          {day}
-          {isToday&&<span style={{fontSize:7,color:isLight?"#c2410c":"#f97316",background:isLight?"#ffedd5":"#3d1a06",border:`1px solid ${isLight?"#ea580c50":"#f9731650"}`,borderRadius:3,padding:"1px 3px"}}>TODAY</span>}
-        </div>
-        {ds&&ds.map((s,i)=>{const sc=sessionColors[s.type];return(
-          <div key={i} style={{background:sc.bg,border:`1px solid ${sc.border}`,borderRadius:4,padding:"2px 5px",marginBottom:2,fontSize:8,color:sc.text,fontFamily:"'DM Mono',monospace",fontWeight:600,display:"flex",alignItems:"center",gap:3}}>
-            <div style={{width:3,height:3,borderRadius:"50%",background:sc.dot,flexShrink:0}}/>{s.type}
-            <span style={{color:sc.text,opacity:0.6,fontWeight:400,marginLeft:"auto"}}>{s.volume.toLocaleString()}</span>
-          </div>
-        );})}
-        {!ds&&pt&&<div style={{border:`1px ${isToday?"solid":"dashed"} ${sessionColors[pt]?.border}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:sessionColors[pt]?.text,opacity:isToday?1:0.5,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3}}>
-          <div style={{width:3,height:3,borderRadius:"50%",background:sessionColors[pt]?.dot,flexShrink:0}}/>{pt}
-          {isToday&&<span style={{marginLeft:"auto",fontSize:7,opacity:0.6}}>up next</span>}
-        </div>}
-        {isShamrock&&<div style={{border:"1px solid #16a34a50",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#4ade80",fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:9}}>☘️</span></div>}
-        {isRest&&!ds&&!pt&&!isShamrock&&<div style={{border:`1px solid ${T.restBorder}`,borderRadius:4,padding:"2px 5px",fontSize:8,color:T.restText,fontFamily:"'DM Mono',monospace",display:"flex",alignItems:"center",gap:3,marginTop:1}}><span style={{fontSize:7}}>&#x1F634;</span>REST</div>}
-        {!ds&&!pt&&!isRest&&!isShamrock&&isPast&&<div style={{fontSize:7,color:T.restText,fontFamily:"'DM Mono',monospace"}}>rest</div>}
-      </div>
-    );
-  }
-
-  function MonthGrid({monthLabel, cells, sessions, planned, restDays, shamrockDays, sessionColors, T, isLight, sel, setSel}) {
-    return (
-      <div style={{marginBottom:24}}>
-        <div style={{color:T.lbl,fontSize:10,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:2,marginBottom:10,paddingLeft:2}}>{monthLabel}</div>
-        <div style={{border:`1px solid ${T.cardBorder}`,borderRadius:12,overflow:"hidden"}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",borderBottom:`1px solid ${T.gridSub}`}}>
-            {days.map(d=><div key={d} style={{padding:"8px 0",textAlign:"center",color:d==="Sat"||d==="Sun"?T.dayPast:T.dayFut,fontSize:9,fontFamily:"'DM Mono',monospace",letterSpacing:1}}>{d}</div>)}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)"}}>
-            {cells.map((day,idx)=>{
-              if(!day) return <div key={`e-${idx}`} style={{minHeight:76,borderRight:`1px solid ${T.grid}`,borderBottom:`1px solid ${T.grid}`}}/>;
-              return renderDay(day, sessions, planned, restDays, shamrockDays.includes(day), monthLabel, sessionColors, T, isLight, sel, setSel);
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function Calendar() {
-    const [sel, setSel] = useState(null);
-    const [isLight, setIsLight] = useState(document.body.classList.contains('light'));
-
-    useEffect(() => {
-      const handler = e => setIsLight(e.detail.light);
-      document.addEventListener('themechange', handler);
-      return () => document.removeEventListener('themechange', handler);
-    }, []);
-
-    const sessionColors = isLight ? lightColors : darkColors;
-    const T = isLight
-      ? {card:"#ffffff", cardBorder:"#e2e8f0", val:"#0f172a", lbl:"#94a3b8", grid:"#f1f5f9", gridSub:"#e2e8f0", dayFut:"#94a3b8", dayPast:"#cbd5e1", restBorder:"#e2e8f0", restText:"#94a3b8", noteText:"#64748b", planned:"#94a3b8", todayBg:"rgba(234,88,12,0.06)"}
-      : {card:"rgba(255,255,255,0.02)", cardBorder:"#1e293b", val:"#f1f5f9", lbl:"#64748b", grid:"#0a1020", gridSub:"#1e293b", dayFut:"#64748b", dayPast:"#475569", restBorder:"#1e293b", restText:"#64748b", noteText:"#64748b", planned:"#64748b", todayBg:"rgba(247,115,22,0.06)"};
-
-    const allLoggedSessions = {...marchSessions, ...Object.fromEntries(Object.entries(aprilSessions).map(([k,v])=>[`apr-${k}`,v]))};
-    const totalVol = [...Object.values(marchSessions), ...Object.values(aprilSessions)].flat().reduce((s,x)=>s+x.volume,0);
-    const totalSets = [...Object.values(marchSessions), ...Object.values(aprilSessions)].flat().reduce((s,x)=>s+x.sets,0);
-    const totalSessionDays = Object.keys(marchSessions).length + Object.keys(aprilSessions).length;
-
-    // Determine selected session detail
-    let selMonth=null, selDay=null, selSessions=null, selPlanned=null;
-    if(sel) {
-      const parts = sel.split("-");
-      if(parts[0]==="March 2026") { selMonth="March 2026"; selDay=parseInt(parts[parts.length-1]); selSessions=marchSessions[selDay]; selPlanned=marchPlanned[selDay]; }
-      else if(parts[0]==="April 2026") { selMonth="April 2026"; selDay=parseInt(parts[parts.length-1]); selSessions=aprilSessions[selDay]; selPlanned=aprilPlanned[selDay]; }
-    }
-
-    // Only show new session types in legend
-    const legendTypes = ["Upper B","Lower A","Upper A","Lower B"];
-
-    return (
-      <div style={{fontFamily:"'DM Sans',sans-serif",padding:"20px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:18}}>
-          {[
-            {l:"Sessions",    v:totalSessionDays},
-            {l:"Total Volume",v:totalVol.toLocaleString()+" kg"},
-            {l:"Total Sets",  v:totalSets},
-            {l:"Programme",   v:"Upper/Lower"},
-          ].map(s=>(
-            <div key={s.l} style={{background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
-              <div style={{color:T.val,fontSize:s.l==="Programme"?11:17,fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{s.v}</div>
-              <div style={{color:T.lbl,fontSize:9,marginTop:2,textTransform:"uppercase",letterSpacing:1}}>{s.l}</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{display:"flex",gap:7,marginBottom:14,flexWrap:"wrap"}}>
-          {legendTypes.map(type=>{const c=sessionColors[type];return(
-            <div key={type} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",background:c.bg,border:`1px solid ${c.border}`,borderRadius:20}}>
-              <div style={{width:5,height:5,borderRadius:"50%",background:c.dot}}/>
-              <span style={{color:c.text,fontSize:9,fontFamily:"'DM Mono',monospace"}}>{type}</span>
-            </div>
-          )})}
-          <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:20}}>
-            <div style={{width:5,height:5,borderRadius:"50%",background:T.planned,border:`1px dashed ${T.planned}`}}/>
-            <span style={{color:T.planned,fontSize:9,fontFamily:"'DM Mono',monospace"}}>Planned</span>
-          </div>
-        </div>
-
-        <MonthGrid monthLabel="March 2026" cells={marchCells} sessions={marchSessions} planned={marchPlanned} restDays={marchRestDays} shamrockDays={shamrockDays} sessionColors={sessionColors} T={T} isLight={isLight} sel={sel} setSel={setSel}/>
-        <MonthGrid monthLabel="April 2026" cells={aprilCells} sessions={aprilSessions} planned={aprilPlanned} restDays={aprilRestDays} shamrockDays={[]} sessionColors={sessionColors} T={T} isLight={isLight} sel={sel} setSel={setSel}/>
-
-        {selSessions&&(
-          <div style={{background:T.card,border:`1px solid ${T.cardBorder}`,borderRadius:12,padding:"16px 18px",marginTop:14}}>
-            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>{selDay} {selMonth} &mdash; Session Detail</div>
-            {selSessions.map((s,i)=>{const sc=sessionColors[s.type];return(
-              <div key={i} style={{marginBottom:i<selSessions.length-1?12:0,paddingBottom:i<selSessions.length-1?12:0,borderBottom:i<selSessions.length-1?`1px solid ${T.gridSub}`:"none"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:7}}><div style={{width:7,height:7,borderRadius:"50%",background:sc.dot}}/><span style={{color:sc.text,fontSize:12,fontWeight:600}}>{s.type}</span></div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:7,marginBottom:8}}>
-                  {[{l:"Volume",v:`${s.volume.toLocaleString()} kg`},{l:"Sets",v:s.sets},{l:"Exercises",v:s.exercises}].map(st=>(
-                    <div key={st.l} style={{background:isLight?"#f8fafc":"rgba(255,255,255,0.02)",border:`1px solid ${T.cardBorder}`,borderRadius:7,padding:"7px 9px",textAlign:"center"}}>
-                      <div style={{color:sc.text,fontSize:13,fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{st.v}</div>
-                      <div style={{color:T.lbl,fontSize:8,marginTop:1,textTransform:"uppercase",letterSpacing:1}}>{st.l}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{color:T.noteText,fontSize:11,lineHeight:1.5,fontStyle:"italic"}}>&#x1F4DD; {s.note}</div>
-              </div>
-            );})}
-          </div>
-        )}
-
-        {sel&&!selSessions&&selPlanned&&(
-          <div style={{background:T.card,border:`1px dashed ${T.cardBorder}`,borderRadius:12,padding:"14px 18px",marginTop:14}}>
-            <div style={{color:T.noteText,fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>{selDay} {selMonth} &mdash; Planned</div>
-            <div style={{display:"flex",alignItems:"center",gap:7}}>
-              <div style={{width:7,height:7,borderRadius:"50%",background:sessionColors[selPlanned]?.dot}}/>
-              <span style={{color:sessionColors[selPlanned]?.text,fontSize:12,fontWeight:600}}>{selPlanned}</span>
-              <span style={{color:T.planned,fontSize:10,fontFamily:"'DM Mono',monospace"}}>— planned in rotation</span>
-            </div>
-          </div>
-        )}
-
-        {sel&&selMonth==="March 2026"&&selDay&&shamrockDays.includes(selDay)&&!selSessions&&(
-          <div style={{background:"rgba(22,163,74,0.06)",border:"1px solid #16a34a30",borderRadius:12,padding:"14px 18px",marginTop:14}}>
-            <div style={{color:"#64748b",fontSize:9,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{selDay} March 2026 — Day Off</div>
-            <div style={{color:"#4ade80",fontSize:12}}>☘️ St Patrick's Day — rest up, you've earned it!</div>
-          </div>
-        )}
-
-        <div style={{marginTop:12,color:T.restBorder,fontSize:9,fontFamily:"'DM Mono',monospace",textAlign:"center"}}>Click any day to see session details</div>
-      </div>
-    );
-  }
-
-  ReactDOM.createRoot(document.getElementById('calendar-mount')).render(<Calendar />);
-})();
-</script>
-
 <!-- MUSCLE BALANCE CHART -->
 <script type="text/babel">
 (function() {
@@ -956,20 +739,19 @@
      Legs B        → Glutes, Hamstrings (RDL), Glutes/Hips
   ─────────────────────────────────────────────────────────────────────────── */
   const muscleData = [
-    // Computed from all 7 sessions (primary full + secondary 0.5×) — updated 11 Mar 2026
-    { muscle: "Glutes",     sets: 17.5, vol: 12503, color: "#a78bfa" },
-    { muscle: "Chest",      sets: 26,   vol: 10332, color: "#f97316" },
-    { muscle: "Core",       sets: 12,   vol: 10306, color: "#fbbf24" },
-    { muscle: "Triceps",    sets: 27,   vol: 8364,  color: "#f97316" },
-    { muscle: "Back",       sets: 22,   vol: 8315,  color: "#38bdf8" },
-    { muscle: "Hamstrings", sets: 12,   vol: 7294,  color: "#a78bfa" },
-    { muscle: "Quads",      sets: 11,   vol: 7191,  color: "#4ade80" },
-    { muscle: "Rear Delts", sets: 13,   vol: 4358,  color: "#38bdf8" },
-    { muscle: "Biceps",     sets: 16,   vol: 3979,  color: "#38bdf8" },
-    { muscle: "Front Delt", sets: 10,   vol: 2871,  color: "#f97316" },
-    { muscle: "Calves",     sets: 3,    vol: 1980,  color: "#4ade80" },
-    { muscle: "Side Delt",  sets: 9,    vol: 1662,  color: "#f97316" },
-  ];
+    // Computed from all 9 sessions (primary full + secondary 0.5×) — updated 16 Mar 2026
+    { muscle: "Shoulders",  sets: 34.0, primary: 18.0, secondary: 16.0, color: "#fb923c" },
+    { muscle: "Chest",      sets: 31.5, primary: 31.5, secondary:  0.0, color: "#f97316" },
+    { muscle: "Triceps",    sets: 25.0, primary: 17.5, secondary:  7.5, color: "#fdba74" },
+    { muscle: "Back",       sets: 24.2, primary: 22.0, secondary:  2.2, color: "#38bdf8" },
+    { muscle: "Glutes",     sets: 21.2, primary: 12.0, secondary:  9.2, color: "#a78bfa" },
+    { muscle: "Rear Delts", sets: 18.0, primary: 16.0, secondary:  2.0, color: "#bae6fd" },
+    { muscle: "Hamstrings", sets: 17.5, primary: 12.0, secondary:  5.5, color: "#c4b5fd" },
+    { muscle: "Biceps",     sets: 17.0, primary:  8.0, secondary:  9.0, color: "#7dd3fc" },
+    { muscle: "Quads",      sets: 16.0, primary: 16.0, secondary:  0.0, color: "#4ade80" },
+    { muscle: "Calves",     sets:  6.0, primary:  6.0, secondary:  0.0, color: "#86efac" },
+    { muscle: "Core",       sets:  6.0, primary:  6.0, secondary:  0.0, color: "#fbbf24" },
+  ];;
 
   // Normalise volumes to 0–100 scale for the bar display
   const maxVol = Math.max(...muscleData.map(m => m.vol));
@@ -982,11 +764,10 @@
 
   // Session type groupings for the legend
   const groups = [
-    { label: "Push",   color: "#f97316", muscles: ["Chest","Triceps","Front Delt","Side Delt"] },
-    { label: "Pull",   color: "#38bdf8", muscles: ["Back","Biceps","Rear Delts"] },
-    { label: "Legs A", color: "#4ade80", muscles: ["Quads","Calves"] },
-    { label: "Legs B", color: "#a78bfa", muscles: ["Hamstrings","Glutes"] },
-    { label: "Core",   color: "#fbbf24", muscles: ["Core"] },
+    { label: "Push", color: "#f97316", muscles: ["Chest","Triceps","Shoulders"] },
+    { label: "Pull", color: "#38bdf8", muscles: ["Back","Biceps","Rear Delts"] },
+    { label: "Legs", color: "#a78bfa", muscles: ["Glutes","Hamstrings","Quads","Calves"] },
+    { label: "Core", color: "#fbbf24", muscles: ["Core"] },
   ];
 
   // Radar chart drawn on canvas via Chart.js
@@ -1203,3 +984,5 @@
 
 </body>
 </html>
+
+---
