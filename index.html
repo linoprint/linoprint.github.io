@@ -574,36 +574,14 @@
       { name:"Walking Lunges", sets:[{w:8,r:16},{w:8,r:16}] },
       { name:"Calf Raises",    sets:[{w:45,r:15},{w:45,r:15},{w:45,r:16}] },
     ]},
-    { type:"Pull", session:3, date:"16/03/2026", day:"Mon", bw:79.8, exercises:[
-      { name:"Pull-downs",   sets:[{w:54,r:12},{w:54,r:10},{w:54,r:9},{w:54,r:9}] },
-      { name:"Cable Rows",   sets:[{w:22.5,r:12},{w:22.5,r:12},{w:22.5,r:12},{w:22.5,r:14}] },
-      { name:"Kneeling PDs", sets:[{w:20,r:15},{w:20,r:12},{w:20,r:12}] },
-      { name:"Bicep Curls",  sets:[{w:6,r:15},{w:6,r:15},{w:8,r:10},{w:8,r:10}] },
-      { name:"Rear Delts",   sets:[{w:26.1,r:15},{w:26.1,r:15},{w:26.1,r:15}] },
-    ]},
-    { type:"Push", session:4, date:"17/03/2026", day:"Tue", bw:79.7, exercises:[
-      { name:"Iso-Lat Bench", sets:[{w:21.95,r:8},{w:21.95,r:7},{w:18.2,r:11},{w:18.2,r:10}] },
-      { name:"DB OHP",        sets:[{w:16,r:8},{w:16,r:8},{w:16,r:8}] },
-      { name:"Pec Flyes",     sets:[{w:59,r:14},{w:59,r:10},{w:53.1,r:8}] },
-    ]},
-    { type:"Legs", session:4, date:"21/03/2026", day:"Sat", bw:79.5, exercises:[
-      { name:"BB Hip Thrusts", sets:[{w:75,r:10},{w:75,r:10},{w:75,r:12}] },
-      { name:"RDLs",           sets:[{w:50,r:10},{w:50,r:10},{w:50,r:10}] },
-      { name:"Leg Press",      sets:[{w:125.7,r:12},{w:125.7,r:12},{w:125.7,r:12}] },
-      { name:"Calf Raises",    sets:[{w:47.3,r:20},{w:47.3,r:18},{w:47.3,r:17}] },
-    ]},
-    { type:"Pull", session:4, date:"22/03/2026", day:"Sun", bw:79.4, exercises:[
-      { name:"Cable Rows",  sets:[{w:26,r:12},{w:26,r:14},{w:26,r:14},{w:26,r:12}] },
-      { name:"Pull-downs",  sets:[{w:54,r:12},{w:54,r:10},{w:54,r:10},{w:54,r:10}] },
-      { name:"Rear Delts",  sets:[{w:32,r:15},{w:32,r:12},{w:32,r:11}] },
-      { name:"Bicep Curls", sets:[{w:6,r:15},{w:8,r:12},{w:8,r:10},{w:8,r:9}] },
-    ]},
   ];
 
-  function sessVol(exs,bw) { return Math.round(exs.reduce((s,e) => s+e.sets.reduce((a,x)=>a+(x.w>0?x.w:bw)*x.r,0),0)); }
+  const UNILATERAL = new Set(["Cable Rows","Kneeling PDs","Bicep Curls","DB OHP"]);
+  function exMult(name) { return UNILATERAL.has(name) ? 2 : 1; }
+  function sessVol(exs,bw) { return Math.round(exs.reduce((s,e) => s+e.sets.reduce((a,x)=>a+(x.w>0?x.w:bw)*x.r*exMult(e.name),0),0)); }
   function totalSets(exs) { return exs.reduce((s,e)=>s+e.sets.length,0); }
   function maxW(exs)      { return Math.max(...exs.flatMap(e=>e.sets.map(x=>x.w))); }
-  function exVol(sets,bw) { return Math.round(sets.reduce((s,x)=>s+(x.w>0?x.w:bw)*x.r,0)); }
+  function exVol(sets,bw,name) { return Math.round(sets.reduce((s,x)=>s+(x.w>0?x.w:bw)*x.r*exMult(name),0)); }
   function norm(v,mn,mx)  { return mx===mn?50:Math.round(20+((v-mn)/(mx-mn))*80); }
 
   const totalVol     = sessions.reduce((s,x)=>s+sessVol(x.exercises,x.bw),0);
@@ -707,7 +685,7 @@
     chartOverview.update();
   });
 
-  const exData = sessions.flatMap(s=>s.exercises.map(e=>({label:e.name,value:exVol(e.sets,s.bw),type:normaliseType(s.type),session:`${normaliseType(s.type)} S${s.session}`,maxW:Math.max(...e.sets.map(x=>x.w)),reps:e.sets.reduce((a,x)=>a+x.r,0)})));
+  const exData = sessions.flatMap(s=>s.exercises.map(e=>({label:e.name,value:exVol(e.sets,s.bw,e.name),type:normaliseType(s.type),session:`${normaliseType(s.type)} S${s.session}`,maxW:Math.max(...e.sets.map(x=>x.w)),reps:e.sets.reduce((a,x)=>a+x.r,0)})));
   const chartExercises = new Chart(document.getElementById('chartExercises'),{
     type:'bar',
     data:{labels:exData.map(d=>d.label),datasets:[{data:exData.map(d=>d.value),backgroundColor:exData.map(d=>(SESSION_COLORS[d.type]||'#94a3b8')+'cc'),borderColor:exData.map(d=>SESSION_COLORS[d.type]||'#94a3b8'),borderWidth:1,borderRadius:4}]},
@@ -757,14 +735,14 @@
      Legs          → Glutes, Hamstrings, Quads, Calves
   ─────────────────────────────────────────────────────────────────────────── */
   const muscleData = [
-    // Computed from all 12 sessions (primary full + secondary 0.5×) — updated 22 Mar 2026
-    { muscle: "Back",       sets: 44.0, primary: 41.0, secondary:  3.0, vol: 17800, color: "#38bdf8" },
+    // Computed from all 12 sessions (primary full + secondary 0.5×) — updated 22 Mar 2026 — unilateral exercises ×2
+    { muscle: "Back",       sets: 44.0, primary: 41.0, secondary:  3.0, vol: 25082, color: "#38bdf8" },
     { muscle: "Chest",      sets: 38.5, primary: 38.5, secondary:  0.0, vol: 12586, color: "#f97316" },
-    { muscle: "Shoulders",  sets: 38.0, primary: 21.0, secondary: 17.0, vol:  6465, color: "#fb923c" },
-    { muscle: "Biceps",     sets: 32.5, primary: 16.0, secondary: 16.5, vol:  8026, color: "#7dd3fc" },
-    { muscle: "Triceps",    sets: 27.5, primary: 17.5, secondary: 10.0, vol:  5955, color: "#fdba74" },
+    { muscle: "Shoulders",  sets: 38.0, primary: 21.0, secondary: 17.0, vol:  7963, color: "#fb923c" },
+    { muscle: "Biceps",     sets: 32.5, primary: 16.0, secondary: 16.5, vol: 11694, color: "#7dd3fc" },
+    { muscle: "Triceps",    sets: 27.5, primary: 17.5, secondary: 10.0, vol:  6704, color: "#fdba74" },
     { muscle: "Glutes",     sets: 26.5, primary: 15.0, secondary: 11.5, vol: 21761, color: "#a78bfa" },
-    { muscle: "Rear Delts", sets: 26.0, primary: 22.0, secondary:  4.0, vol:  8990, color: "#bae6fd" },
+    { muscle: "Rear Delts", sets: 26.0, primary: 22.0, secondary:  4.0, vol: 10232, color: "#bae6fd" },
     { muscle: "Hamstrings", sets: 22.0, primary: 15.0, secondary:  7.0, vol: 13872, color: "#c4b5fd" },
     { muscle: "Quads",      sets: 19.0, primary: 19.0, secondary:  0.0, vol: 16559, color: "#4ade80" },
     { muscle: "Calves",     sets:  9.0, primary:  9.0, secondary:  0.0, vol:  6652, color: "#86efac" },
